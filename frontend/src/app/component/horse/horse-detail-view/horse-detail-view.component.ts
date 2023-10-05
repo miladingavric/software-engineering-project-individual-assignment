@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Inject, LOCALE_ID } from '@angular/core';
 import {Horse} from "../../../dto/horse";
 import {Sex} from "../../../dto/sex";
 import {HorseService} from "../../../service/horse.service";
@@ -9,6 +9,7 @@ import {NgForm, NgModel} from "@angular/forms";
 import {Breed} from "../../../dto/breed";
 import {Observable, of} from "rxjs";
 import {HorseCreateEditMode} from "../horse-create-edit/horse-create-edit.component";
+import {formatDate} from "@angular/common";
 
 @Component({
   selector: 'app-horse-detail-view',
@@ -64,6 +65,10 @@ export class HorseDetailViewComponent {
     this.horse.dateOfBirth = value;
   }
 
+  formatThisDate(date : Date): String {
+    return formatDate(date, "dd-MM-yyyy",  this.locale);
+}
+
 
   constructor(
     private service: HorseService,
@@ -71,6 +76,7 @@ export class HorseDetailViewComponent {
     private router: Router,
     private route: ActivatedRoute,
     private notification: ToastrService,
+    @Inject(LOCALE_ID) public locale: string,
   ) {
   }
 
@@ -177,4 +183,5 @@ export class HorseDetailViewComponent {
     }
   }
 
+  protected readonly formatDate = formatDate;
 }
