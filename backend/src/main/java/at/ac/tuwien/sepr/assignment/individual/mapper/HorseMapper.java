@@ -55,19 +55,29 @@ public class HorseMapper {
     if (horse == null) {
       return null;
     }
-
-    var breed = Optional.of(breeds.get(horse.getBreedId()))
-        .orElseThrow(() -> new FatalException(
-            "Saved horse with id " + horse.getId() + " refers to non-existing breed with id " + horse.getBreedId()));
-
-    return new HorseDetailDto(
-        horse.getId(),
-        horse.getName(),
-        horse.getSex(),
-        horse.getDateOfBirth(),
-        horse.getHeight(),
-        horse.getWeight(),
-        breed
-    );
+    if (horse.getBreedId() != null) {
+      var breed = Optional.of(breeds.get(horse.getBreedId()))
+              .orElseThrow(() -> new FatalException(
+                      "Saved horse with id " + horse.getId() + " refers to non-existing breed with id " + horse.getBreedId()));
+      return new HorseDetailDto(
+              horse.getId(),
+              horse.getName(),
+              horse.getSex(),
+              horse.getDateOfBirth(),
+              horse.getHeight(),
+              horse.getWeight(),
+              breed
+      );
+    }else {
+      return new HorseDetailDto(
+              horse.getId(),
+              horse.getName(),
+              horse.getSex(),
+              horse.getDateOfBirth(),
+              horse.getHeight(),
+              horse.getWeight(),
+              null
+      );
+    }
   }
 }

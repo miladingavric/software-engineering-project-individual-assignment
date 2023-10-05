@@ -107,6 +107,7 @@ public class HorseJdbcDao implements HorseDao {
     if (keyHolder == null) {
       throw new FatalException("ID was not created");
     }
+
     try {
       jdbcTemplate.update(connection -> {
         PreparedStatement ps = connection.prepareStatement(SQL_CREATE,
@@ -117,7 +118,12 @@ public class HorseJdbcDao implements HorseDao {
         ps.setString(3, horse.dateOfBirth().format(DateTimeFormatter.ISO_DATE));
         ps.setFloat(4, horse.height());
         ps.setFloat(5, horse.weight());
-        ps.setLong(6, horse.breed().id());
+        if (horse.breed() != null) {
+          ps.setLong(6, horse.breed().id());
+        }
+        else {
+          ps.setNull(6, -1);
+        }
 
         return ps;
 
@@ -125,42 +131,78 @@ public class HorseJdbcDao implements HorseDao {
     } catch (DataAccessException e) {
       new FatalException(e);
     }
-
-    return new Horse()
-            .setId(keyHolder.getKey().longValue())
-            .setName(horse.name())
-            .setSex(horse.sex())
-            .setDateOfBirth(horse.dateOfBirth())
-            .setHeight(horse.height())
-            .setWeight(horse.weight())
-            .setBreedId(horse.breed().id());
+    if (horse.breed() != null) {
+      return new Horse()
+              .setId(keyHolder.getKey().longValue())
+              .setName(horse.name())
+              .setSex(horse.sex())
+              .setDateOfBirth(horse.dateOfBirth())
+              .setHeight(horse.height())
+              .setWeight(horse.weight())
+              .setBreedId(horse.breed().id());
+    }
+    else {
+      return new Horse()
+              .setId(keyHolder.getKey().longValue())
+              .setName(horse.name())
+              .setSex(horse.sex())
+              .setDateOfBirth(horse.dateOfBirth())
+              .setHeight(horse.height())
+              .setWeight(horse.weight())
+              .setBreedId(null);
+    }
   }
 
 
   @Override
   public Horse update(HorseDetailDto horse) throws NotFoundException {
     LOG.trace("update({})", horse);
-    int updated = jdbcTemplate.update(SQL_UPDATE,
-        horse.name(),
-        horse.sex().toString(),
-        horse.dateOfBirth(),
-        horse.height(),
-        horse.weight(),
-        horse.breed().id(),
-        horse.id());
+    int updated;
+    if (horse.breed() != null) {
+      updated = jdbcTemplate.update(SQL_UPDATE,
+              horse.name(),
+              horse.sex().toString(),
+              horse.dateOfBirth(),
+              horse.height(),
+              horse.weight(),
+              horse.breed().id(),
+              horse.id());
+    }
+    else {
+      updated = jdbcTemplate.update(SQL_UPDATE,
+              horse.name(),
+              horse.sex().toString(),
+              horse.dateOfBirth(),
+              horse.height(),
+              horse.weight(),
+              null,
+              horse.id());
+    }
     if (updated == 0) {
       throw new NotFoundException("Could not update horse with ID " + horse.id() + ", because it does not exist");
     }
 
-    return new Horse()
-        .setId(horse.id())
-        .setName(horse.name())
-        .setSex(horse.sex())
-        .setDateOfBirth(horse.dateOfBirth())
-        .setHeight(horse.height())
-        .setWeight(horse.weight())
-        .setBreedId(horse.breed().id())
-        ;
+
+    if (horse.breed() != null) {
+      return new Horse()
+              .setId(horse.id())
+              .setName(horse.name())
+              .setSex(horse.sex())
+              .setDateOfBirth(horse.dateOfBirth())
+              .setHeight(horse.height())
+              .setWeight(horse.weight())
+              .setBreedId(horse.breed().id());
+    }
+    else {
+      return new Horse()
+              .setId(horse.id())
+              .setName(horse.name())
+              .setSex(horse.sex())
+              .setDateOfBirth(horse.dateOfBirth())
+              .setHeight(horse.height())
+              .setWeight(horse.weight())
+              .setBreedId(null);
+    }
   }
 
   @Override
