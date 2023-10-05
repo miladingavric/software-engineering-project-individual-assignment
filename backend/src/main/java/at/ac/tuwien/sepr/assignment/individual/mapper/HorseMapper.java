@@ -41,7 +41,7 @@ public class HorseMapper {
               horse.getDateOfBirth(),
               breed
       );
-    }else {
+    } else {
       return new HorseListDto(
               horse.getId(),
               horse.getName(),
@@ -77,7 +77,7 @@ public class HorseMapper {
               horse.getWeight(),
               breed
       );
-    }else {
+    } else {
       return new HorseDetailDto(
               horse.getId(),
               horse.getName(),

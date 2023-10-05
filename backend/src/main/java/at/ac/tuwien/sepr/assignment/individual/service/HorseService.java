@@ -28,7 +28,6 @@ public interface HorseService {
    *
    * @param horse the horse to create
    * @return created horse
-   * @throws NotFoundException if the horse with given ID does not exist in the persistent data store
    * @throws ValidationException if the update data given for the horse is in itself incorrect (no name, name too long …)
    * @throws ConflictException if the update data given for the horse is in conflict the data currently in the system (breed does not exist, …)
    */

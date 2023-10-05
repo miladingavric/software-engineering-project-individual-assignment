@@ -120,8 +120,7 @@ public class HorseJdbcDao implements HorseDao {
         ps.setFloat(5, horse.weight());
         if (horse.breed() != null) {
           ps.setLong(6, horse.breed().id());
-        }
-        else {
+        } else {
           ps.setNull(6, -1);
         }
 
@@ -140,8 +139,7 @@ public class HorseJdbcDao implements HorseDao {
               .setHeight(horse.height())
               .setWeight(horse.weight())
               .setBreedId(horse.breed().id());
-    }
-    else {
+    } else {
       return new Horse()
               .setId(keyHolder.getKey().longValue())
               .setName(horse.name())
@@ -167,8 +165,7 @@ public class HorseJdbcDao implements HorseDao {
               horse.weight(),
               horse.breed().id(),
               horse.id());
-    }
-    else {
+    } else {
       updated = jdbcTemplate.update(SQL_UPDATE,
               horse.name(),
               horse.sex().toString(),
@@ -192,8 +189,7 @@ public class HorseJdbcDao implements HorseDao {
               .setHeight(horse.height())
               .setWeight(horse.weight())
               .setBreedId(horse.breed().id());
-    }
-    else {
+    } else {
       return new Horse()
               .setId(horse.id())
               .setName(horse.name())

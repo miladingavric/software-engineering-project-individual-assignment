@@ -89,18 +89,6 @@ export class HorseDetailViewComponent {
     }
   }
 
-  public get submitButtonText(): string {
-    switch (this.mode) {
-      case HorseCreateEditMode.create:
-        return 'Create';
-      default:
-        return 'Update';
-    }
-  }
-
-  get modeIsCreate(): boolean {
-    return this.mode === HorseCreateEditMode.create;
-  }
 
 
   get sex(): string {
