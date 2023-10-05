@@ -34,6 +34,18 @@ export class HorseComponent implements OnInit {
       .subscribe({next: () => this.reloadHorses()});
   }
 
+  deleteHorse(id: number) {
+    this.service.delete(id).subscribe(
+      () => {
+        this.horses = this.horses.filter((horse) => horse.id !== id);
+        this.notification.success('Horse successfully deleted');
+      },
+      (err) => {
+        this.notification.error('Cannot delete Horse');
+      }
+    );
+  }
+
   reloadHorses() {
     if (this.searchBornEarliest) {
       this.searchParams.bornEarliest = new Date(this.searchBornEarliest);

@@ -62,5 +62,18 @@ export class HorseService {
       horse
     );
   }
+  /*UPDATE
+  *
+  * */
+
+  /**
+   * Delete a horse from the system.
+   *
+   * @param id the id of the horse that should be deleted
+   * @return void
+   */
+  delete(id: number): Observable<Horse> {
+    return this.http.delete<Horse>(`${baseUri}/${id}`);
+  }
 
 }
