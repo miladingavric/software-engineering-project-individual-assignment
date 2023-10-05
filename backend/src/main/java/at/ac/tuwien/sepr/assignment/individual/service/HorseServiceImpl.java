@@ -52,6 +52,15 @@ public class HorseServiceImpl implements HorseService {
         .map(horse -> mapper.entityToListDto(horse, breedsPerId));
   }
 
+  @Override
+  public HorseDetailDto create(HorseDetailDto horse) throws ValidationException, ConflictException {
+    LOG.trace("create({})", horse);
+    //insert validator here...
+    var createdHorse = dao.create(horse);
+    var breeds = breedMapForSingleHorse(createdHorse);
+    return mapper.entityToDetailDto(createdHorse, breeds);
+  }
+
 
   @Override
   public HorseDetailDto update(HorseDetailDto horse) throws NotFoundException, ValidationException, ConflictException {

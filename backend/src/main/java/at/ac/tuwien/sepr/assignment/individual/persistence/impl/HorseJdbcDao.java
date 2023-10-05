@@ -8,16 +8,22 @@ import at.ac.tuwien.sepr.assignment.individual.exception.NotFoundException;
 import at.ac.tuwien.sepr.assignment.individual.persistence.HorseDao;
 import at.ac.tuwien.sepr.assignment.individual.type.Sex;
 import java.lang.invoke.MethodHandles;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Types;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -38,6 +44,11 @@ public class HorseJdbcDao implements HorseDao {
 
   private static final String SQL_LIMIT_CLAUSE = " LIMIT :limit";
 
+  //CRUD
+  private static final  String SQL_CREATE = "INSERT INTO "
+          + TABLE_NAME
+          + " (name, sex, date_of_birth, height, weight, breed_id)"
+          + " VALUES (?, ?, ?, ?, ?, ?)";
   private static final String SQL_UPDATE = "UPDATE " + TABLE_NAME
       + " SET name = ?"
       + "  , sex = ?"
@@ -86,6 +97,42 @@ public class HorseJdbcDao implements HorseDao {
     params.registerSqlType("sex", Types.VARCHAR);
 
     return jdbcNamed.query(query, params, this::mapRow);
+  }
+
+  @Override
+  public Horse create(HorseDetailDto horse) throws FatalException {
+    LOG.trace("update({})", horse);
+    final KeyHolder keyHolder = new GeneratedKeyHolder();
+    if (keyHolder == null) {
+      throw new FatalException("ID was not created");
+    }
+    try {
+      jdbcTemplate.update(connection -> {
+        PreparedStatement ps = connection.prepareStatement(SQL_CREATE,
+                Statement.RETURN_GENERATED_KEYS);
+
+        ps.setString(1, horse.name());
+        ps.setString(2, horse.sex().toString());
+        ps.setString(3, horse.dateOfBirth().format(DateTimeFormatter.ISO_DATE));
+        ps.setFloat(4, horse.height());
+        ps.setFloat(5, horse.weight());
+        ps.setLong(6, horse.breed().id());
+
+        return ps;
+
+      }, keyHolder);
+    } catch (DataAccessException e) {
+      new FatalException(e);
+    }
+
+    return new Horse()
+            .setId(keyHolder.getKey().longValue())
+            .setName(horse.name())
+            .setSex(horse.sex())
+            .setDateOfBirth(horse.dateOfBirth())
+            .setHeight(horse.height())
+            .setWeight(horse.weight())
+            .setBreedId(horse.breed().id());
   }
 
 

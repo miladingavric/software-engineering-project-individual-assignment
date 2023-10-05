@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
@@ -63,6 +64,13 @@ public class HorseEndpoint {
       logClientError(status, "Horse to update not found", e);
       throw new ResponseStatusException(status, e.getMessage(), e);
     }
+  }
+
+  @PostMapping()
+  public HorseDetailDto create(@RequestBody HorseDetailDto toCreate) throws ValidationException, ConflictException {
+    LOG.info("POST " + BASE_PATH + "/{}", toCreate);
+    LOG.debug("Body of request:\n{}", toCreate);
+    return service.create(toCreate);
   }
 
 
