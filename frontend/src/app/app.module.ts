@@ -17,6 +17,7 @@ import {TournamentCreateComponent} from './component/tournament/tournament-creat
 import {TournamentStandingsComponent} from './component/tournament/tournament-standings/tournament-standings.component';
 import {TournamentStandingsBranchComponent} from './component/tournament/tournament-standings/tournament-standings-branch/tournament-standings-branch.component';
 import { HorseDetailViewComponent } from './component/horse/horse-detail-view/horse-detail-view.component';
+import {TournamentComponent} from './component/tournament/tournament.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { HorseDetailViewComponent } from './component/horse/horse-detail-view/ho
     TournamentStandingsComponent,
     TournamentStandingsBranchComponent,
     HorseDetailViewComponent,
+    TournamentComponent,
   ],
   imports: [
     BrowserModule,

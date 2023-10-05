@@ -19,7 +19,6 @@ import {formatDate} from "@angular/common";
 export class HorseDetailViewComponent {
 
 
-  mode: HorseCreateEditMode = HorseCreateEditMode.create;
   horse: Horse = {
     name: '',
     sex: Sex.female,
@@ -80,14 +79,6 @@ export class HorseDetailViewComponent {
   ) {
   }
 
-  public get heading(): string {
-    switch (this.mode) {
-      case HorseCreateEditMode.create:
-        return 'Create New Horse';
-      default:
-        return 'Update Horse';
-    }
-  }
 
 
 
@@ -99,14 +90,6 @@ export class HorseDetailViewComponent {
     }
   }
 
-  private get modeActionFinished(): string {
-    switch (this.mode) {
-      case HorseCreateEditMode.create:
-        return 'created';
-      default:
-        return 'updated';
-    }
-  }
 
   ngOnInit(): void {
         this.route.params.subscribe((params) => {
@@ -143,33 +126,6 @@ export class HorseDetailViewComponent {
     ? of([])
     :  this.breedService.breedsByName(input, 5);
 
-  public onSubmit(form: NgForm): void {
-    console.log('is form valid?', form.valid, this.horse);
-    if (form.valid) {
-      let observable: Observable<Horse>;
-      switch (this.mode) {
-        case HorseCreateEditMode.create:
-          observable = this.service.create(this.horse);
-          break;
-        case HorseCreateEditMode.edit:
-          observable = this.service.update(this.horse);
-          break;
-        default:
-          console.error('Unknown HorseCreateEditMode', this.mode);
-          return;
-      }
-      observable.subscribe({
-        next: data => {
-          this.notification.success(`Horse ${this.horse.name} successfully ${this.modeActionFinished}.`);
-          this.router.navigate(['/horses']);
-        },
-        error: error => {
-          console.error('Error creating horse', error);
-          // TODO show an error message to the user. Include and sensibly present the info from the backend!
-        }
-      });
-    }
-  }
 
   protected readonly formatDate = formatDate;
 }
