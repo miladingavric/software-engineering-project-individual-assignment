@@ -83,7 +83,7 @@ export class HorseCreateEditComponent implements OnInit {
       case HorseCreateEditMode.create:
         return 'Create New Horse';
       default:
-        return '?';
+        return 'Update Horse';
     }
   }
 
@@ -92,7 +92,7 @@ export class HorseCreateEditComponent implements OnInit {
       case HorseCreateEditMode.create:
         return 'Create';
       default:
-        return '?';
+        return 'Update';
     }
   }
 
@@ -114,13 +114,29 @@ export class HorseCreateEditComponent implements OnInit {
       case HorseCreateEditMode.create:
         return 'created';
       default:
-        return '?';
+        return 'updated';
     }
   }
 
   ngOnInit(): void {
     this.route.data.subscribe(data => {
       this.mode = data.mode;
+      let horseId: number;
+      if (this.mode === HorseCreateEditMode.edit) {
+        this.route.params.subscribe((params) => {
+          horseId = params.id;
+          this.service
+            .getByID(horseId)
+            .subscribe(
+            (horse: Horse) => (
+              (this.height = horse.height),
+              (this.weight = horse.weight),
+              (this.dateOfBirth = horse.dateOfBirth),
+              (this.horse = horse)
+            )
+          );
+        });
+      }
     });
   }
 
@@ -145,6 +161,9 @@ export class HorseCreateEditComponent implements OnInit {
       switch (this.mode) {
         case HorseCreateEditMode.create:
           observable = this.service.create(this.horse);
+          break;
+        case HorseCreateEditMode.edit:
+          observable = this.service.update(this.horse);
           break;
         default:
           console.error('Unknown HorseCreateEditMode', this.mode);

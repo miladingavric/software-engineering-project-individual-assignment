@@ -62,9 +62,25 @@ export class HorseService {
       horse
     );
   }
-  /*UPDATE
-  *
-  * */
+  /**
+   * Get horse with given ID
+   *
+   * @return observable of the found horse.
+   */
+  getByID(id: number): Observable<Horse> {
+    return this.http.get<Horse>(`${baseUri}/${id}`);
+  }
+
+  /**
+   * Update a given horse.
+   *
+   * @param horse the data for the horse that should be created
+   * @return an Observable for the created horse
+   */
+  update(horse: Horse): Observable<Horse> {
+    console.log(horse);
+    return this.http.put<Horse>(`${baseUri}/${horse.id}`, horse);
+  }
 
   /**
    * Delete a horse from the system.
