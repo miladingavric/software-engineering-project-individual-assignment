@@ -35,7 +35,7 @@ public class HorseJdbcDao implements HorseDao {
   private static final String SQL_SELECT_SEARCH = "SELECT  "
           + "    h.id as \"id\", h.name as \"name\", h.sex as \"sex\", h.date_of_birth as \"date_of_birth\""
           + "    , h.height as \"height\", h.weight as \"weight\", h.breed_id as \"breed_id\""
-          + " FROM " + TABLE_NAME + " h JOIN breed b ON (h.breed_id = b.id)"
+          + " FROM " + TABLE_NAME + " h LEFT JOIN breed b ON (h.breed_id = b.id)"
           + " WHERE (:name IS NULL OR UPPER(h.name) LIKE UPPER('%'||:name||'%'))"
           + "  AND (:sex IS NULL OR :sex = sex)"
           + "  AND (:bornEarliest IS NULL OR :bornEarliest <= h.date_of_birth)"
