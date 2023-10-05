@@ -1,0 +1,95 @@
+
+<h1 class="display-1">Details of a Horse</h1>
+
+
+<form #form="ngForm" [class.was-validated]="form.submitted" (ngSubmit)="onSubmit(form)">
+  <div class="row">
+    <div class="mt-4 d-flex flex-row yellow-hover move-right">
+      <button type="button"
+              class="btn btn-sm responsive-warning-button test-button"
+              (click)="editThisHorse(horse)">
+        <i class="bi bi-pencil"></i>
+        Edit
+      </button>
+    </div>
+    <!-- Start name and date of birth row -->
+    <div class="mb-2 col-lg-6">
+      <!-- When nesting rows, always make row > col-* > row. The Bootstrap classes do not work right when an element is both col* and row -->
+      <div class="row">
+        <label for="horseName" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
+          Name
+        </label>
+        <div class="col-md-10 col-lg-8 p-t-8">
+          <span id="horseName" name="horseName">{{horse.name}}</span>
+        </div>
+      </div>
+    </div>
+    <div class="mb-2 col-lg-6">
+      <div class="row">
+        <label for="horseDateOfBirth" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
+          Date of Birth
+        </label>
+        <div class="col-md-10 col-lg-8 p-t-8">
+          <span id="horseDateOfBirth" name="horseDateOfBirth">{{horse.dateOfBirth}}</span>
+        </div>
+      </div>
+    </div>
+    <!-- End name and date of birth row -->
+  </div>
+
+  <div class="row">
+    <!-- Start sex row -->
+    <div class="mb-2 col-lg-6">
+      <div class="row">
+        <label for="horseSex" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
+          Sex
+        </label>
+        <div class="col-md-10 col-lg-8 p-t-8">
+          <span id="horseSex" name="horseSex">{{horse.sex}}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-2 col-lg-6">
+      <div class="row">
+        <label for="horseBreed" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
+          Breed
+        </label>
+        <div class="col-md-10 col-lg-8 p-t-8">
+          <span id="horseBreed" name="horseBreed">{{horse.breed?.name}}</span>
+        </div>
+      </div>
+    </div>
+    <!-- End sex row -->
+  </div>
+
+  <div class="row">
+    <!-- Start height and weight row -->
+    <div class="mb-2 col-lg-6">
+      <div class="row"><label for="horseHeight" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
+        Height [m]
+      </label>
+        <div class="col-md-10 col-lg-8 p-t-8">
+          <span id="horseHeight" name="horseHeight">{{horse.height}}</span>
+        </div>
+      </div>
+    </div>
+    <div class="mb-2 col-lg-6">
+      <div class="row"><label for="horseWeight" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
+        Weight [kg]
+      </label>
+        <div class="col-md-10 col-lg-8 p-t-8">
+          <span id="horseWeight" name="horseWeight">{{horse.weight}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4 d-flex flex-row">
+    <button type="button"
+            class="btn btn-danger">
+      <i class="bi bi-trash"></i>
+      Delete
+    </button>
+  </div>
+</form>
