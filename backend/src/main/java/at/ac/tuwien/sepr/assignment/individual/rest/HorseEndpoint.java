@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -31,6 +32,13 @@ public class HorseEndpoint {
 
   public HorseEndpoint(HorseService service) {
     this.service = service;
+  }
+
+  @PostMapping()
+  public HorseDetailDto create(@RequestBody HorseDetailDto toCreate) throws ValidationException, ConflictException {
+    LOG.info("POST " + BASE_PATH + "/{}", toCreate);
+    LOG.debug("Body of request:\n{}", toCreate);
+    return service.create(toCreate);
   }
 
   @GetMapping
@@ -66,11 +74,11 @@ public class HorseEndpoint {
     }
   }
 
-  @PostMapping()
-  public HorseDetailDto create(@RequestBody HorseDetailDto toCreate) throws ValidationException, ConflictException {
-    LOG.info("POST " + BASE_PATH + "/{}", toCreate);
-    LOG.debug("Body of request:\n{}", toCreate);
-    return service.create(toCreate);
+  @DeleteMapping("{id}")
+  public void delete(@PathVariable long id) throws ValidationException, ConflictException, NotFoundException {
+    LOG.info("DELETE " + BASE_PATH + "/{}", id);
+    LOG.debug("We need to delete horse with id: {}", id);
+    service.delete(id);
   }
 
 

@@ -47,6 +47,16 @@ public interface HorseService {
    */
   HorseDetailDto update(HorseDetailDto horse) throws NotFoundException, ValidationException, ConflictException;
 
+  /**
+   * Updates the horse with the ID given in {@code horse}
+   * with the data given in {@code horse}
+   * in the persistent data store.
+   *
+   * @param id of the horse that needs to be deleted
+   * @throws NotFoundException if the horse with given ID does not exist in the persistent data store
+   */
+  void delete(long id) throws NotFoundException;
+
 
   /**
    * Get the horse with given ID, with more detail information.
