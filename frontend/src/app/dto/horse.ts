@@ -16,7 +16,7 @@ export interface HorseListDto {
   name: string,
   sex: Sex,
   dateOfBirth: Date;
-  breed: Breed;
+  breed?: Breed;
 }
 
 

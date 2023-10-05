@@ -56,7 +56,7 @@
           Breed
         </label>
         <div class="col-md-10 col-lg-8 p-t-8">
-          <span id="horseBreed" name="horseBreed">{{horse.breed?.name}}</span>
+          <span id="horseBreed" name="horseBreed" *ngIf="horse.breed != null">{{horse.breed?.name}}</span>
         </div>
       </div>
     </div>

@@ -120,7 +120,8 @@
         <td>{{horse.name}}</td>
         <td>{{horse.sex === 'FEMALE' ? 'Female' : 'Male'}}</td>
         <td>{{horse.dateOfBirth.toLocaleDateString()}}</td>
-        <td>{{horse.breed.name}}</td>
+        <td *ngIf="horse.breed != null else emptyString" >{{horse.breed.name}}</td>
+        <ng-template #emptyString><td></td></ng-template>
         <td>
           <div class="btn-group">
             <a class="btn btn-sm responsive-info-button"
