@@ -4,6 +4,15 @@
 
 <form #form="ngForm" [class.was-validated]="form.submitted" (ngSubmit)="onSubmit(form)">
   <div class="row">
+
+    <div class="mt-4 d-flex flex-row blue-hover move-right">
+      <button type="button"
+              class="btn btn-sm responsive-warning-button test-button"
+              (click)="inspectThisHorse(horse)">
+        <i class="bi bi-pencil"></i>
+        Edit
+      </button>
+    </div>
     <!-- Start name and date of birth row -->
     <div class="mb-2 col-lg-6">
       <!-- When nesting rows, always make row > col-* > row. The Bootstrap classes do not work right when an element is both col* and row -->

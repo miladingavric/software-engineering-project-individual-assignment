@@ -118,6 +118,10 @@ export class HorseCreateEditComponent implements OnInit {
     }
   }
 
+  inspectThisHorse(horse: Horse) {
+    this.router.navigate([`horses/info/${horse.id}`]);
+  }
+
   ngOnInit(): void {
     this.route.data.subscribe(data => {
       this.mode = data.mode;
