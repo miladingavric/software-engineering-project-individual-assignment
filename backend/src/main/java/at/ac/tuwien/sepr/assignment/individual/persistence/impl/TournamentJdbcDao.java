@@ -120,7 +120,7 @@ public class TournamentJdbcDao implements TournamentDao {
     }
     Long tournamentKey = keyHolderTournaments.getKey().longValue();
     Object[] participants =  Arrays.stream(tournament.participants()).toArray();
-    ArrayList<Horse> horses= new ArrayList<>();
+    ArrayList<Horse> horses = new ArrayList<>();
     for (Object horse : participants) {
       HorseDetailDto temp = (HorseDetailDto) horse;
       horses.add(

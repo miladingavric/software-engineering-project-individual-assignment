@@ -4,6 +4,8 @@
 
 DELETE FROM horse WHERE id < 0;
 DELETE  FROM breed WHERE id < 0;
+DELETE FROM tournament WHERE id <0;
+DELETE FROM tournamentParticipants WHERE tournamentID <0;
 
 INSERT INTO breed (id, name)
 VALUES
@@ -64,3 +66,16 @@ VALUES
     (-31, 'Leo', 'MALE', '2017-03-05', 1.70, 720, -8),
     (-32, 'Luna', 'FEMALE', '2018-10-10', 1.62, 670, -19);
 
+INSERT INTO tournament (id, name, start_date, end_date)
+VALUES (-1, 'Gold Cup at Ascot', '2023-06-22', '2023-06-25');
+
+INSERT INTO tournamentParticipants (tournamentID, horseId)
+VALUES
+    (-1, -7),
+    (-1, -8),
+    (-1, -9),
+    (-1, -10),
+    (-1, -11),
+    (-1, -12),
+    (-1, -13),
+    (-1, -14);
