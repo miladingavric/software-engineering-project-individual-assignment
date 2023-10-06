@@ -103,8 +103,8 @@ public class HorseJdbcDao implements HorseDao {
   @Override
   public Horse create(HorseDetailDto horse) throws FatalException {
     LOG.trace("update({})", horse);
-    final KeyHolder keyHolder = new GeneratedKeyHolder();
-    if (keyHolder == null) {
+    final KeyHolder keyHolderHorses = new GeneratedKeyHolder();
+    if (keyHolderHorses == null) {
       throw new FatalException("ID was not created");
     }
 
@@ -126,13 +126,13 @@ public class HorseJdbcDao implements HorseDao {
 
         return ps;
 
-      }, keyHolder);
+      }, keyHolderHorses);
     } catch (DataAccessException e) {
       new FatalException(e);
     }
     if (horse.breed() != null) {
       return new Horse()
-              .setId(keyHolder.getKey().longValue())
+              .setId(keyHolderHorses.getKey().longValue())
               .setName(horse.name())
               .setSex(horse.sex())
               .setDateOfBirth(horse.dateOfBirth())
@@ -141,7 +141,7 @@ public class HorseJdbcDao implements HorseDao {
               .setBreedId(horse.breed().id());
     } else {
       return new Horse()
-              .setId(keyHolder.getKey().longValue())
+              .setId(keyHolderHorses.getKey().longValue())
               .setName(horse.name())
               .setSex(horse.sex())
               .setDateOfBirth(horse.dateOfBirth())

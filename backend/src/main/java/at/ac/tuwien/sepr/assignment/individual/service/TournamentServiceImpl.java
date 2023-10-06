@@ -6,7 +6,9 @@ import at.ac.tuwien.sepr.assignment.individual.dto.TournamentListDto;
 import at.ac.tuwien.sepr.assignment.individual.dto.TournamentSearchDto;
 import at.ac.tuwien.sepr.assignment.individual.entity.Horse;
 import at.ac.tuwien.sepr.assignment.individual.entity.Tournament;
+import at.ac.tuwien.sepr.assignment.individual.exception.ConflictException;
 import at.ac.tuwien.sepr.assignment.individual.exception.NotFoundException;
+import at.ac.tuwien.sepr.assignment.individual.exception.ValidationException;
 import at.ac.tuwien.sepr.assignment.individual.mapper.HorseMapper;
 import at.ac.tuwien.sepr.assignment.individual.mapper.TournamentMapper;
 import at.ac.tuwien.sepr.assignment.individual.persistence.HorseDao;
@@ -21,26 +23,33 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
-public class TournamentServiceImpl implements TournamentService{
+public class TournamentServiceImpl implements TournamentService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    private final TournamentDao dao;
-    private final TournamentMapper mapper;
+  private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private final TournamentDao dao;
+  private final TournamentMapper mapper;
 
-    public TournamentServiceImpl(TournamentDao dao, TournamentMapper mapper) {
-        this.dao = dao;
-        this.mapper = mapper;
-    }
-    @Override
-    public Stream<TournamentListDto> search(TournamentSearchDto searchParameters) {
-        var tournaments = dao.search(searchParameters);
-        return tournaments.stream().map(tournament -> mapper.entityToListDto(tournament));
-    }
+  public TournamentServiceImpl(TournamentDao dao, TournamentMapper mapper) {
+    this.dao = dao;
+    this.mapper = mapper;
+  }
+  @Override
+  public Stream<TournamentListDto> search(TournamentSearchDto searchParameters) {
+    var tournaments = dao.search(searchParameters);
+    return tournaments.stream().map(tournament -> mapper.entityToListDto(tournament));
+  }
 
-    @Override
-    public TournamentDetailDto getById(long id) throws NotFoundException {
-        LOG.trace("details({})", id);
-        Tournament tournament = dao.getById(id);
-        return mapper.entityToDetailDto(tournament);
-    }
+  @Override
+  public TournamentDetailDto getById(long id) throws NotFoundException {
+    LOG.trace("details({})", id);
+    Tournament tournament = dao.getById(id);
+    return mapper.entityToDetailDto(tournament);
+  }
+
+  @Override
+  public TournamentDetailDto create(TournamentDetailDto tournament) throws ValidationException, ConflictException {
+    LOG.trace("details({})", tournament);
+    Tournament createdTournament = dao.create(tournament);
+    return mapper.entityToDetailDto(createdTournament);
+  }
 }

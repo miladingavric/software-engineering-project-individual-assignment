@@ -1,9 +1,11 @@
 package at.ac.tuwien.sepr.assignment.individual.mapper;
 
-import at.ac.tuwien.sepr.assignment.individual.dto.*;
+import at.ac.tuwien.sepr.assignment.individual.dto.HorseDetailDto;
+import at.ac.tuwien.sepr.assignment.individual.dto.TournamentDetailDto;
+import at.ac.tuwien.sepr.assignment.individual.dto.TournamentListDto;
+import at.ac.tuwien.sepr.assignment.individual.dto.TournamentSearchDto;
 import at.ac.tuwien.sepr.assignment.individual.entity.Horse;
 import at.ac.tuwien.sepr.assignment.individual.entity.Tournament;
-import at.ac.tuwien.sepr.assignment.individual.exception.FatalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -13,77 +15,65 @@ import java.util.Map;
 import java.util.Optional;
 @Component
 public class TournamentMapper {
-    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    /**
-     * Convert a horse entity object to a {@link HorseListDto}.
-     * The given map of owners needs to contain the owner of {@code horse}.
-     *
-     * @param tournament the horse to convert
-     * @return the converted {@link HorseListDto}
-     */
-    public TournamentListDto entityToListDto(Tournament tournament) {
-        LOG.trace("entityToListDto({})", tournament);
-        if (tournament == null) {
-            return null;
-        }
-            return new TournamentListDto(
-                    tournament.getId(),
-                    tournament.getName(),
-                    tournament.getStartDate(),
-                    tournament.getEndDate()
-            );
-
+  /**
+   * Convert a horse entity object to a {@link TournamentListDto}.
+   * The given map of owners needs to contain the owner of {@code horse}.
+   *
+   * @param tournament the horse to convert
+   * @return the converted {@link TournamentListDto}
+   */
+  public TournamentListDto entityToListDto(Tournament tournament) {
+    LOG.trace("entityToListDto({})", tournament);
+    if (tournament == null) {
+      return null;
     }
-
-    public TournamentDetailDto entityToDetailDto(Tournament tournament) {
-        LOG.trace("entityToListDto({})", tournament);
-        if (tournament == null) {
-            return null;
-        }
-        return new TournamentDetailDto(
-                tournament.getId(),
-                tournament.getName(),
-                tournament.getStartDate(),
-                tournament.getEndDate()
-        );
+    HorseDetailDto[] dtoHorses = new  HorseDetailDto[tournament.getParticipants().length];
+    int increment = 0;
+    for (Horse participant : tournament.getParticipants()) {
+      dtoHorses[increment] = new HorseDetailDto(participant.getId(),
+          participant.getName(),
+          participant.getSex(),
+          participant.getDateOfBirth(),
+          participant.getHeight(),
+          participant.getWeight(),
+          null);
+      increment++;
     }
+    return new TournamentListDto(
+        tournament.getId(),
+        tournament.getName(),
+        tournament.getStartDate(),
+        tournament.getEndDate(),
+        dtoHorses
+    );
 
-    /**
-     * Convert a horse entity object to a {@link HorseListDto}.
-     * The given map of owners needs to contain the owner of {@code horse}.
-     *
-     * @param horse the horse to convert
-     * @return the converted {@link HorseListDto}
-     *
-    public HorseDetailDto entityToDetailDto(Horse horse, Map<Long, BreedDto> breeds) {
-        LOG.trace("entityToDto({})", horse);
-        if (horse == null) {
-            return null;
-        }
-        if (horse.getBreedId() != null && breeds.get(horse.getBreedId()) != null) {
-            var breed = Optional.of(breeds.get(horse.getBreedId()))
-                    .orElseThrow(() -> new FatalException(
-                            "Saved horse with id " + horse.getId() + " refers to non-existing breed with id " + horse.getBreedId()));
-            return new HorseDetailDto(
-                    horse.getId(),
-                    horse.getName(),
-                    horse.getSex(),
-                    horse.getDateOfBirth(),
-                    horse.getHeight(),
-                    horse.getWeight(),
-                    breed
-            );
-        } else {
-            return new HorseDetailDto(
-                    horse.getId(),
-                    horse.getName(),
-                    horse.getSex(),
-                    horse.getDateOfBirth(),
-                    horse.getHeight(),
-                    horse.getWeight(),
-                    null
-            );
-        }
-    }*/
+  }
+
+  public TournamentDetailDto entityToDetailDto(Tournament tournament) {
+    LOG.trace("entityToListDto({})", tournament);
+    if (tournament == null) {
+      return null;
+    }
+    HorseDetailDto[] dtoHorses = new  HorseDetailDto[tournament.getParticipants().length];
+    int increment = 0;
+    for (Horse participant : tournament.getParticipants()) {
+      dtoHorses[increment] = new HorseDetailDto(participant.getId(),
+          participant.getName(),
+          participant.getSex(),
+          participant.getDateOfBirth(),
+          participant.getHeight(),
+          participant.getWeight(),
+          null);
+      increment++;
+    }
+    return new TournamentDetailDto(
+        tournament.getId(),
+        tournament.getName(),
+        tournament.getStartDate(),
+        tournament.getEndDate(),
+        dtoHorses
+    );
+  }
 }

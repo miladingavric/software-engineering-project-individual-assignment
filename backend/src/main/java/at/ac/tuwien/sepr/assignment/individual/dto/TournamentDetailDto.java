@@ -6,14 +6,16 @@ public record TournamentDetailDto(
         Long id,
         String name,
         LocalDate startDate,
-        LocalDate endDate
+        LocalDate endDate,
+        HorseDetailDto[] participants
 ) {
   public TournamentDetailDto withId(long newId) {
     return new TournamentDetailDto(
             newId,
             name,
             startDate,
-            endDate
+            endDate,
+            participants
         );
   }
 }
