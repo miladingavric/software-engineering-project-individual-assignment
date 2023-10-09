@@ -41,6 +41,10 @@ export class TournamentService {
   }
   // \TEMPLATE EXCLUDE END\
 
+  public getStandings(id : number): Observable<TournamentStandingsDto> {
+    return this.http.get<TournamentStandingsDto>(`${baseUri}/standings/${id}`);
+  }
+
   public create(tournament: TournamentCreateDto): Observable<TournamentDetailDto> {
     // TODO this is not implemented yet!
     return this.http.post<TournamentDetailDto>(

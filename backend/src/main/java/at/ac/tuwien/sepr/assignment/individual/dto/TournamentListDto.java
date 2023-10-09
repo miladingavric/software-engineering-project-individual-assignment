@@ -9,7 +9,6 @@ public record TournamentListDto(
         Long id,
         String name,
         LocalDate startDate,
-        LocalDate endDate,
-        HorseDetailDto[] participants
+        LocalDate endDate
 ) {
 }

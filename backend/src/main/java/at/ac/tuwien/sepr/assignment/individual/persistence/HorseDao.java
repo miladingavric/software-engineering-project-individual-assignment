@@ -64,3 +64,4 @@ public interface HorseDao {
    */
   Horse getById(long id) throws NotFoundException;
 }
+

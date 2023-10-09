@@ -8,7 +8,6 @@ public class Tournament {
 
   private Long id;
   private String name;
-  private String tournamentName;
   private LocalDate startDate;
   private LocalDate endDate;
   private Horse[] participants;
@@ -26,9 +25,6 @@ public class Tournament {
     return id;
   }
 
-  public String getTournamentName() {
-    return tournamentName;
-  }
   public LocalDate getStartDate() {
     return startDate;
   }
@@ -40,9 +36,6 @@ public class Tournament {
     return this;
   }
 
-  public void setTournamentName(String tournamentName) {
-    this.tournamentName = tournamentName;
-  }
 
   public Tournament setStartDate(LocalDate startDate) {
     this.startDate = startDate;

@@ -7,7 +7,8 @@ public record TournamentDetailDto(
         String name,
         LocalDate startDate,
         LocalDate endDate,
-        HorseDetailDto[] participants
+        TournamentDetailParticipantDto[] participants
+
 ) {
   public TournamentDetailDto withId(long newId) {
     return new TournamentDetailDto(

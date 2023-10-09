@@ -37,7 +37,7 @@ export interface TournamentDetailParticipantDto {
 }
 
 export interface TournamentStandingsTreeDto {
-  thisParticipant: TournamentDetailParticipantDto | null;
+  thisParticipant: TournamentDetailParticipantDto | undefined;
   branches?: TournamentStandingsTreeDto[];
 }
 

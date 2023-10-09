@@ -1,9 +1,10 @@
 package at.ac.tuwien.sepr.assignment.individual.mapper;
 
-import at.ac.tuwien.sepr.assignment.individual.dto.HorseDetailDto;
 import at.ac.tuwien.sepr.assignment.individual.dto.TournamentDetailDto;
+import at.ac.tuwien.sepr.assignment.individual.dto.TournamentDetailParticipantDto;
 import at.ac.tuwien.sepr.assignment.individual.dto.TournamentListDto;
-import at.ac.tuwien.sepr.assignment.individual.dto.TournamentSearchDto;
+import at.ac.tuwien.sepr.assignment.individual.dto.TournamentStandingsDto;
+import at.ac.tuwien.sepr.assignment.individual.dto.TournamentStandingsTreeDto;
 import at.ac.tuwien.sepr.assignment.individual.entity.Horse;
 import at.ac.tuwien.sepr.assignment.individual.entity.Tournament;
 import org.slf4j.Logger;
@@ -11,8 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
-import java.util.Map;
-import java.util.Optional;
+
 @Component
 public class TournamentMapper {
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -26,54 +26,58 @@ public class TournamentMapper {
    */
   public TournamentListDto entityToListDto(Tournament tournament) {
     LOG.trace("entityToListDto({})", tournament);
-    if (tournament == null) {
-      return null;
-    }
-    HorseDetailDto[] dtoHorses = new  HorseDetailDto[tournament.getParticipants().length];
-    int increment = 0;
-    for (Horse participant : tournament.getParticipants()) {
-      dtoHorses[increment] = new HorseDetailDto(participant.getId(),
-          participant.getName(),
-          participant.getSex(),
-          participant.getDateOfBirth(),
-          participant.getHeight(),
-          participant.getWeight(),
-          null);
-      increment++;
-    }
     return new TournamentListDto(
-        tournament.getId(),
-        tournament.getName(),
-        tournament.getStartDate(),
-        tournament.getEndDate(),
-        dtoHorses
+            tournament.getId(),
+            tournament.getName(),
+            tournament.getStartDate(),
+            tournament.getEndDate()
     );
-
   }
 
+
   public TournamentDetailDto entityToDetailDto(Tournament tournament) {
-    LOG.trace("entityToListDto({})", tournament);
-    if (tournament == null) {
-      return null;
-    }
-    HorseDetailDto[] dtoHorses = new  HorseDetailDto[tournament.getParticipants().length];
+    LOG.trace("entityToDetailDto({})", tournament);
+    Horse[] horses = tournament.getParticipants();
+    TournamentDetailParticipantDto[] horseDtos = new TournamentDetailParticipantDto[horses.length];
     int increment = 0;
-    for (Horse participant : tournament.getParticipants()) {
-      dtoHorses[increment] = new HorseDetailDto(participant.getId(),
-          participant.getName(),
-          participant.getSex(),
-          participant.getDateOfBirth(),
-          participant.getHeight(),
-          participant.getWeight(),
-          null);
+    for (Horse horse : horses) {
+      horseDtos[increment] = new TournamentDetailParticipantDto(
+                    horse.getId(),
+                    horse.getName(),
+                    horse.getDateOfBirth(),
+                   -1,
+                    -1
+      );
       increment++;
     }
     return new TournamentDetailDto(
-        tournament.getId(),
-        tournament.getName(),
-        tournament.getStartDate(),
-        tournament.getEndDate(),
-        dtoHorses
+            tournament.getId(),
+            tournament.getName(),
+            tournament.getStartDate(),
+            tournament.getEndDate(),
+            horseDtos
+    );
+  }
+
+  public TournamentStandingsDto entityToStandingsDto(Tournament tournament, TournamentStandingsTreeDto tree, long entryNumber, long roundReached) {
+    Horse[] horses = tournament.getParticipants();
+    TournamentDetailParticipantDto[] participants = new TournamentDetailParticipantDto[horses.length];
+    int increment = 0;
+    for (Horse horse : horses) {
+      participants[increment] = new TournamentDetailParticipantDto(
+              horse.getId(),
+              horse.getName(),
+              horse.getDateOfBirth(),
+              entryNumber,
+              roundReached
+      );
+      increment++;
+    }
+    return new TournamentStandingsDto(
+            tournament.getId(),
+            tournament.getName(),
+            participants,
+            tree
     );
   }
 }
