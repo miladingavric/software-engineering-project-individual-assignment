@@ -18,6 +18,7 @@ export class TournamentStandingsBranchComponent {
   @Input() branchPosition = TournamentBranchPosition.FINAL_WINNER;
   @Input() treeBranch: TournamentStandingsTreeDto | undefined;
   @Input() allParticipants: TournamentDetailParticipantDto[] = [];
+  participantValue: any;
 
   get isUpperHalf(): boolean {
     return this.branchPosition === TournamentBranchPosition.UPPER;
@@ -29,6 +30,16 @@ export class TournamentStandingsBranchComponent {
 
   get isFinalWinner(): boolean {
     return this.branchPosition === TournamentBranchPosition.FINAL_WINNER;
+  }
+
+  ngOnChanges() {
+    if (this.treeBranch?.thisParticipant?.dateOfBirth) {
+      this.participantValue = this.treeBranch.thisParticipant;
+    } else {
+      // Handle the case where treeBranch is null or undefined
+      // For example, set a default value
+      this.participantValue = '';
+    }
   }
 
   suggestions = (input: string) => {
@@ -49,5 +60,9 @@ export class TournamentStandingsBranchComponent {
     return participant
         ? `${participant.name} (${participant.dateOfBirth})`
         : "";
+  }
+
+  public stateOfApp() {
+    console.log(this.treeBranch)
   }
 }

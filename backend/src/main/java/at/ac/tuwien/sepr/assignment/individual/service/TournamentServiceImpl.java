@@ -8,6 +8,7 @@ import at.ac.tuwien.sepr.assignment.individual.dto.TournamentListDto;
 import at.ac.tuwien.sepr.assignment.individual.dto.TournamentSearchDto;
 import at.ac.tuwien.sepr.assignment.individual.dto.TournamentStandingsDto;
 import at.ac.tuwien.sepr.assignment.individual.dto.TournamentStandingsTreeDto;
+import at.ac.tuwien.sepr.assignment.individual.dto.TreeNodeDto;
 import at.ac.tuwien.sepr.assignment.individual.entity.Horse;
 import at.ac.tuwien.sepr.assignment.individual.entity.Match;
 import at.ac.tuwien.sepr.assignment.individual.entity.Tournament;
@@ -23,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.swing.tree.TreeNode;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,37 +61,37 @@ public class TournamentServiceImpl implements TournamentService {
     LOG.trace("details({})", id);
     Tournament tournament = dao.getStandings(id);
     List<Match> matches = dao.getMatches(id);
-    for (Match match : matches) {
-      System.out.println(horseDao.getById(match.getHorseID1()).getName()
-                        + " VS "
-                        + horseDao.getById(match.getHorseID2()).getName()
-                        + " ---- "
-                        + horseDao.getById(match.getWinnerHorseID()).getName() + "  WON!");
-    }
     Horse[] participants = tournament.getParticipants();
-    TournamentDetailParticipantDto Wendy = new TournamentDetailParticipantDto(participants[0].getId(), participants[0].getName(), participants[0].getDateOfBirth(), 1, 3);
-    TournamentDetailParticipantDto Hugo = new TournamentDetailParticipantDto(participants[1].getId(), participants[1].getName(), participants[1].getDateOfBirth(), 2, 3);
-    TournamentDetailParticipantDto Bella = new TournamentDetailParticipantDto(participants[2].getId(), participants[2].getName(), participants[2].getDateOfBirth(), 3, 2);
-    TournamentDetailParticipantDto Thunder = new TournamentDetailParticipantDto(participants[3].getId(), participants[3].getName(), participants[3].getDateOfBirth(), 4, 2);
-    TournamentDetailParticipantDto Luna = new TournamentDetailParticipantDto(participants[4].getId(), participants[4].getName(), participants[0].getDateOfBirth(), 5, 1);
-    TournamentDetailParticipantDto Apollo = new TournamentDetailParticipantDto(participants[5].getId(), participants[5].getName(), participants[5].getDateOfBirth(), 6, 1);
-    TournamentDetailParticipantDto Sophie = new TournamentDetailParticipantDto(participants[6].getId(), participants[6].getName(), participants[6].getDateOfBirth(), 7, 1);
-    TournamentDetailParticipantDto Max = new TournamentDetailParticipantDto(participants[7].getId(), participants[7].getName(), participants[7].getDateOfBirth(), 8, 1);
+    TournamentDetailParticipantDto Max = new TournamentDetailParticipantDto(participants[0].getId(), participants[0].getName(), participants[0].getDateOfBirth(), 1, 3);
+    TournamentDetailParticipantDto Sophie = new TournamentDetailParticipantDto(participants[1].getId(), participants[1].getName(), participants[1].getDateOfBirth(), 2, 3);
+    TournamentDetailParticipantDto Apollo = new TournamentDetailParticipantDto(participants[2].getId(), participants[2].getName(), participants[2].getDateOfBirth(), 3, 2);
+    TournamentDetailParticipantDto Luna = new TournamentDetailParticipantDto(participants[3].getId(), participants[3].getName(), participants[3].getDateOfBirth(), 4, 2);
+    TournamentDetailParticipantDto Thunder = new TournamentDetailParticipantDto(participants[4].getId(), participants[4].getName(), participants[0].getDateOfBirth(), 5, 1);
+    TournamentDetailParticipantDto Bella = new TournamentDetailParticipantDto(participants[5].getId(), participants[5].getName(), participants[5].getDateOfBirth(), 6, 1);
+    TournamentDetailParticipantDto Hugo = new TournamentDetailParticipantDto(participants[6].getId(), participants[6].getName(), participants[6].getDateOfBirth(), 7, 1);
+    TournamentDetailParticipantDto Wendy = new TournamentDetailParticipantDto(participants[7].getId(), participants[7].getName(), participants[7].getDateOfBirth(), 8, 1);
     //___________________________________________________________________//
+    for (Horse participant : participants){
+      System.out.println(participant.getName());
+    }
+    for (Match match : matches) {
+
+      System.out.println(horseDao.getById(match.getHorseID1()).getName()
+          + " VS "
+          + horseDao.getById(match.getHorseID2()).getName()
+          + " ---- "
+          + horseDao.getById(match.getWinnerHorseID()).getName() + "  WON!");
+    }
     //-------------------------------------------------------------------//
+    TournamentDetailParticipantDto emptyPlace = new TournamentDetailParticipantDto(-9999999,"",null,-1,-1);
     TournamentStandingsTreeDto tree = new TournamentStandingsTreeDto();
-    tree.insert(Thunder);
-    tree.insert(Thunder);
-    tree.insert(Bella);
-    tree.insert(Luna);
-    tree.insert(Thunder);
-    tree.insert(Bella);
-    tree.insert(Hugo);
-    tree.insert(Apollo);
-    tree.insert(Sophie);
-    tree.insert(Wendy);
-    tree.insert(Max);
+    tree.insert(emptyPlace,
+                emptyPlace, Bella,
+                Wendy, Hugo, Bella, Thunder,
+                Wendy, Max, Hugo, Sophie, Bella, Apollo, Thunder, Luna);
+
     long roundReached = dao.getRounds(id);
+    System.out.println(tree);
 
     return mapper.entityToStandingsDto(tournament, tree, 1, roundReached);
   }
@@ -115,18 +117,6 @@ public class TournamentServiceImpl implements TournamentService {
     //___________________________________________________________________//
     //-------------------------------------------------------------------//
     TournamentStandingsTreeDto tree = new TournamentStandingsTreeDto();
-    tree.insert(Thunder);
-    tree.insert(Thunder);
-    tree.insert(Bella);
-    tree.insert(Luna);
-    tree.insert(Thunder);
-    tree.insert(Bella);
-    tree.insert(Hugo);
-    tree.insert(Apollo);
-    tree.insert(Sophie);
-    tree.insert(Wendy);
-    tree.insert(Max);
-
 
    return tree;
   }

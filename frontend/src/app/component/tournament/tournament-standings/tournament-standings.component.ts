@@ -33,6 +33,8 @@ export class TournamentStandingsComponent implements OnInit {
       (data: TournamentStandingsDto) => {
         this.standings = data;
         console.log(data)
+        this.standings.tree.thisParticipant = data.tree.thisParticipant;
+        this.standings.tree.branches = data.tree.branches;
       },
       (error : any) => {
         console.error('Error fetching standings:', error);

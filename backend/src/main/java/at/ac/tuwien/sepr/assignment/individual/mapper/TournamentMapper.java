@@ -59,6 +59,10 @@ public class TournamentMapper {
     );
   }
 
+  public TournamentDetailParticipantDto entityToTournamentDetailParticipantDto (Horse horse) {
+    return new TournamentDetailParticipantDto(horse.getId(), horse.getName(), horse.getDateOfBirth(), 1, 3);
+  }
+
   public TournamentStandingsDto entityToStandingsDto(Tournament tournament, TournamentStandingsTreeDto tree, long entryNumber, long roundReached) {
     Horse[] horses = tournament.getParticipants();
     TournamentDetailParticipantDto[] participants = new TournamentDetailParticipantDto[horses.length];
