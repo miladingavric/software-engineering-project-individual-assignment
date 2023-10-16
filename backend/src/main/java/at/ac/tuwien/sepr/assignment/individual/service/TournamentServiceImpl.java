@@ -38,7 +38,11 @@ public class TournamentServiceImpl implements TournamentService {
   private final ParticipantMapper participantMapper;
   private final HorseDao horseDao;
 
-  public TournamentServiceImpl(TournamentDao dao, TournamentMapper mapper, HorseDao horseDao, ParticipantDao participantDao, ParticipantMapper participantMapper) {
+  public TournamentServiceImpl(TournamentDao dao,
+                               TournamentMapper mapper,
+                               HorseDao horseDao,
+                               ParticipantDao participantDao,
+                               ParticipantMapper participantMapper) {
     this.dao = dao;
     this.mapper = mapper;
     this.participantDao = participantDao;
@@ -94,7 +98,10 @@ public class TournamentServiceImpl implements TournamentService {
   /**Creating tree section*/
   TournamentStandingsTreeDto createTournamentTree(TournamentDetailParticipantDto[] arr, int low, int high) {
     if (low == high) {
-      return arr[low] == null ? null : new TournamentStandingsTreeDto(arr[low]);
+      if (arr[low] == null || arr[low].roundReached() == 0) {
+        return new TournamentStandingsTreeDto(null);
+      }
+      return new TournamentStandingsTreeDto(arr[low]);
     }
 
     int mid = (low + high) / 2;
@@ -118,7 +125,7 @@ public class TournamentServiceImpl implements TournamentService {
 
 
     // If both children are not null, return a new node with the winner
-    TournamentDetailParticipantDto winner = getWinner(branches0.thisParticipant(), branches1.thisParticipant());  // You need to implement this function
+    TournamentDetailParticipantDto winner = getWinner(branches0.thisParticipant(), branches1.thisParticipant());
     TournamentStandingsTreeDto node = new TournamentStandingsTreeDto(winner);
     node.branches()[0] = branches0;
     node.branches()[1] = branches1;
@@ -143,6 +150,9 @@ public class TournamentServiceImpl implements TournamentService {
     }
     if (participant1.roundReached() == participant2.roundReached()) {
       return null;
+    }
+    if (participant1.roundReached() == 0) {
+      System.out.println(participant1.name() + " reached round " + participant1.roundReached());
     }
 
     // Otherwise, the participant who has reached a higher round is the winner

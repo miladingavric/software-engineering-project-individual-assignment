@@ -18,7 +18,6 @@ export class TournamentStandingsBranchComponent {
   @Input() branchPosition = TournamentBranchPosition.FINAL_WINNER;
   @Input() treeBranch: TournamentStandingsTreeDto | undefined;
   @Input() allParticipants: TournamentDetailParticipantDto[] = [];
-  participantValue: any;
 
   get isUpperHalf(): boolean {
     return this.branchPosition === TournamentBranchPosition.UPPER;
@@ -36,13 +35,13 @@ export class TournamentStandingsBranchComponent {
     // The candidates are either the participants of the previous round matches in this branch
     // or, if this is the first round, all participant horses
     const allCandidates =
-      this.treeBranch?.branches?.map(b => b.thisParticipant)
+      this.treeBranch?.branches?.map(b => (b?.thisParticipant ?? null))
       ?? this.allParticipants;
     const results = allCandidates
-        .filter(x => !!x)
-        .map(x => <TournamentDetailParticipantDto><unknown>x)
-        .filter((x) =>
-            x.name.toUpperCase().match(new RegExp(`.*${input.toUpperCase()}.*`)));
+      .filter(x => !!x)
+      .map(x => <TournamentDetailParticipantDto><unknown>x)
+      .filter((x) =>
+        x.name.toUpperCase().match(new RegExp(`.*${input.toUpperCase()}.*`)));
     return of(results);
   };
 

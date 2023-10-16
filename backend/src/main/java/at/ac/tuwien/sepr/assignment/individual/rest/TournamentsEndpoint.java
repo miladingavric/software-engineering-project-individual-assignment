@@ -75,7 +75,8 @@ public class TournamentsEndpoint {
   }
 
   @PutMapping("standings/{id}")
-  public TournamentStandingsDto updateStandings(@PathVariable long id, @RequestBody TournamentStandingsDto toUpdate) throws ValidationException, ConflictException, NotFoundException {
+  public TournamentStandingsDto updateStandings(@PathVariable long id,
+                                                @RequestBody TournamentStandingsDto toUpdate) throws ValidationException, ConflictException, NotFoundException {
     LOG.info("PUT " + BASE_PATH + "/{}", toUpdate);
     LOG.debug("Body of request:\n{}", toUpdate);
     return service.update(toUpdate.withId(id));

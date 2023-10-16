@@ -46,19 +46,7 @@ export class TournamentService {
   }
 
   public updateStandings(standings : TournamentStandingsDto | undefined): Observable<TournamentStandingsDto> {
-    console.log("sending standings")
-    console.log(standings)
-    console.log(`${baseUri}/standings/${standings?.id}`)
-    this.http.put<TournamentStandingsDto>(`${baseUri}/standings/${standings?.id}`, standings).subscribe(
-      (response) => {
-        // Handle successful response here
-        console.log('PUT request successful', response);
-      },
-      (error) => {
-        // Handle errors here
-        console.error('PUT request error', error);
-      });
-      return this.http.put<TournamentStandingsDto>(`${baseUri}/standings/${standings?.id}`, standings);
+    return this.http.put<TournamentStandingsDto>(`${baseUri}/standings/${standings?.id}`, standings);
   }
 
   public create(tournament: TournamentCreateDto): Observable<TournamentDetailDto> {
@@ -69,6 +57,8 @@ export class TournamentService {
     );
   }
 
-
+  public generateFirstRoung(id : number): Observable<TournamentStandingsDto> {
+    return this.http.get<TournamentStandingsDto>(`${baseUri}/standings/${id}`);
+  }
 
 }

@@ -48,12 +48,31 @@ export class TournamentStandingsComponent implements OnInit {
   public submit(form: NgForm) {
     console.log(this.standings)
 
-    this.service.updateStandings(this.standings);
+    this.service.updateStandings(this.standings).subscribe(
+      (response) => {
+        // Handle the response here
+        console.log('PUT request successful', response);
+      },
+      (error) => {
+        // Handle errors here
+        console.error('PUT request error', error);
+      }
+    );
   }
 
   public generateFirstRound() {
     if (!this.standings)
       return;
     // TODO implement
+    this.service.generateFirstRoung(this.standings.id).subscribe(
+      (response) => {
+        // Handle the response here
+        console.log('GET request successful', response);
+      },
+      (error) => {
+        // Handle errors here
+        console.error('GET request error', error);
+      }
+    );
   }
 }

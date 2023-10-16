@@ -27,7 +27,7 @@
     [suggestions]="suggestions"
     [(ngModel)]="treeBranch.thisParticipant"
     [formatModel]="formatParticipant"
-    *ngIf="treeBranch?.thisParticipant !== null"
+    *ngIf="treeBranch !== null"
     ></app-autocomplete>
 </div>
 
