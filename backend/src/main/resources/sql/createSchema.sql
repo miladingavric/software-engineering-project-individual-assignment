@@ -28,8 +28,10 @@ CREATE TABLE IF NOT EXISTS tournament
 
 CREATE TABLE IF NOT EXISTS tournamentParticipants
 (
-    tournamentID INT,
-    horseID INT,
+    tournamentID INT NOT NULL,
+    horseID INT NOT NULL,
+    entryNumber INT,
+    roundReached INT,
     PRIMARY KEY (tournamentID, horseID),
     FOREIGN KEY (tournamentID) REFERENCES tournament(id) ON DELETE CASCADE,
     FOREIGN KEY (horseID) REFERENCES horse(id) ON DELETE cascade

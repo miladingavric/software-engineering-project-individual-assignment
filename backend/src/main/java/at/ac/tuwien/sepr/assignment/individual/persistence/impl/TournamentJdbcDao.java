@@ -72,6 +72,9 @@ public class TournamentJdbcDao implements TournamentDao {
   private static final String SQL_GET_MATCHES = "SELECT *"
           + " FROM  tournamentmatch"
           + " WHERE tournamentid = ?";
+  private static final String SQL_GET_MATCH_WINNER = "SELECT winnerHorseID"
+      + " FROM  tournamentmatch"
+      + " WHERE tournamentid = ? AND horse1id = ? AND horse2id = ?";
   private static final String SQL_LIMIT_CLAUSE = " LIMIT :limit";
   private final JdbcTemplate jdbcTemplate;
   private final NamedParameterJdbcTemplate jdbcNamed;

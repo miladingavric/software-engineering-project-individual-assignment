@@ -32,16 +32,6 @@ export class TournamentStandingsBranchComponent {
     return this.branchPosition === TournamentBranchPosition.FINAL_WINNER;
   }
 
-  ngOnChanges() {
-    if (this.treeBranch?.thisParticipant?.dateOfBirth) {
-      this.participantValue = this.treeBranch.thisParticipant;
-    } else {
-      // Handle the case where treeBranch is null or undefined
-      // For example, set a default value
-      this.participantValue = '';
-    }
-  }
-
   suggestions = (input: string) => {
     // The candidates are either the participants of the previous round matches in this branch
     // or, if this is the first round, all participant horses

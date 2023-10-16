@@ -57,4 +57,16 @@ public interface TournamentService {
    * @throws ConflictException if the update data given for the horse is in conflict the data currently in the system (breed does not exist, …)
    */
   TournamentDetailDto create(TournamentCreateDto tournament) throws ValidationException, ConflictException;
+
+  /**
+   * Updates tournament standings  {@code standings}
+   * with the data given in {@code standings}
+   * in the persistent data store.
+   *
+   * @param standings new standings, changed by user
+   * @return updated standings
+   * @throws ValidationException if the update data given for the horse is in itself incorrect (no name, name too long …)
+   * @throws ConflictException if the update data given for the horse is in conflict the data currently in the system (breed does not exist, …)
+   */
+  TournamentStandingsDto update(TournamentStandingsDto standings) throws ValidationException, ConflictException, NotFoundException;
 }

@@ -8,26 +8,24 @@ import at.ac.tuwien.sepr.assignment.individual.dto.TournamentListDto;
 import at.ac.tuwien.sepr.assignment.individual.dto.TournamentSearchDto;
 import at.ac.tuwien.sepr.assignment.individual.dto.TournamentStandingsDto;
 import at.ac.tuwien.sepr.assignment.individual.dto.TournamentStandingsTreeDto;
-import at.ac.tuwien.sepr.assignment.individual.dto.TreeNodeDto;
 import at.ac.tuwien.sepr.assignment.individual.entity.Horse;
-import at.ac.tuwien.sepr.assignment.individual.entity.Match;
+import at.ac.tuwien.sepr.assignment.individual.entity.Participant;
 import at.ac.tuwien.sepr.assignment.individual.entity.Tournament;
 import at.ac.tuwien.sepr.assignment.individual.exception.ConflictException;
 import at.ac.tuwien.sepr.assignment.individual.exception.NotFoundException;
 import at.ac.tuwien.sepr.assignment.individual.exception.ValidationException;
-import at.ac.tuwien.sepr.assignment.individual.mapper.HorseMapper;
+import at.ac.tuwien.sepr.assignment.individual.mapper.ParticipantMapper;
 import at.ac.tuwien.sepr.assignment.individual.mapper.TournamentMapper;
 import at.ac.tuwien.sepr.assignment.individual.persistence.HorseDao;
+import at.ac.tuwien.sepr.assignment.individual.persistence.ParticipantDao;
 import at.ac.tuwien.sepr.assignment.individual.persistence.TournamentDao;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import javax.swing.tree.TreeNode;
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.stream.Stream;
 
 @Service
@@ -36,11 +34,15 @@ public class TournamentServiceImpl implements TournamentService {
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private final TournamentDao dao;
   private final TournamentMapper mapper;
+  private final ParticipantDao participantDao;
+  private final ParticipantMapper participantMapper;
   private final HorseDao horseDao;
 
-  public TournamentServiceImpl(TournamentDao dao, TournamentMapper mapper, HorseMapper horseMapper, HorseDao horseDao) {
+  public TournamentServiceImpl(TournamentDao dao, TournamentMapper mapper, HorseDao horseDao, ParticipantDao participantDao, ParticipantMapper participantMapper) {
     this.dao = dao;
     this.mapper = mapper;
+    this.participantDao = participantDao;
+    this.participantMapper = participantMapper;
     this.horseDao = horseDao;
   }
   @Override
@@ -59,41 +61,17 @@ public class TournamentServiceImpl implements TournamentService {
   @Override
   public TournamentStandingsDto getStandings(long id) throws NotFoundException {
     LOG.trace("details({})", id);
+    Collection<Participant> participantsNew = participantDao.getParticipantsInTournament(id);
     Tournament tournament = dao.getStandings(id);
-    List<Match> matches = dao.getMatches(id);
     Horse[] participants = tournament.getParticipants();
-    TournamentDetailParticipantDto Max = new TournamentDetailParticipantDto(participants[0].getId(), participants[0].getName(), participants[0].getDateOfBirth(), 1, 3);
-    TournamentDetailParticipantDto Sophie = new TournamentDetailParticipantDto(participants[1].getId(), participants[1].getName(), participants[1].getDateOfBirth(), 2, 3);
-    TournamentDetailParticipantDto Apollo = new TournamentDetailParticipantDto(participants[2].getId(), participants[2].getName(), participants[2].getDateOfBirth(), 3, 2);
-    TournamentDetailParticipantDto Luna = new TournamentDetailParticipantDto(participants[3].getId(), participants[3].getName(), participants[3].getDateOfBirth(), 4, 2);
-    TournamentDetailParticipantDto Thunder = new TournamentDetailParticipantDto(participants[4].getId(), participants[4].getName(), participants[0].getDateOfBirth(), 5, 1);
-    TournamentDetailParticipantDto Bella = new TournamentDetailParticipantDto(participants[5].getId(), participants[5].getName(), participants[5].getDateOfBirth(), 6, 1);
-    TournamentDetailParticipantDto Hugo = new TournamentDetailParticipantDto(participants[6].getId(), participants[6].getName(), participants[6].getDateOfBirth(), 7, 1);
-    TournamentDetailParticipantDto Wendy = new TournamentDetailParticipantDto(participants[7].getId(), participants[7].getName(), participants[7].getDateOfBirth(), 8, 1);
-    //___________________________________________________________________//
-    for (Horse participant : participants){
-      System.out.println(participant.getName());
+    TournamentDetailParticipantDto[] participantsDtos = new TournamentDetailParticipantDto[8];
+    int i = 0;
+    for (Participant participant : participantsNew) {
+      participantsDtos[i] = participantMapper.entityToTournamentDetailParticipantDto(participant);
+      i++;
     }
-    for (Match match : matches) {
-
-      System.out.println(horseDao.getById(match.getHorseID1()).getName()
-          + " VS "
-          + horseDao.getById(match.getHorseID2()).getName()
-          + " ---- "
-          + horseDao.getById(match.getWinnerHorseID()).getName() + "  WON!");
-    }
-    //-------------------------------------------------------------------//
-    TournamentDetailParticipantDto emptyPlace = new TournamentDetailParticipantDto(-9999999,"",null,-1,-1);
-    TournamentStandingsTreeDto tree = new TournamentStandingsTreeDto();
-    tree.insert(emptyPlace,
-                emptyPlace, Bella,
-                Wendy, Hugo, Bella, Thunder,
-                Wendy, Max, Hugo, Sophie, Bella, Apollo, Thunder, Luna);
-
-    long roundReached = dao.getRounds(id);
-    System.out.println(tree);
-
-    return mapper.entityToStandingsDto(tournament, tree, 1, roundReached);
+    TournamentStandingsTreeDto tree = startCreatingTournamentTree(participantsDtos);
+    return mapper.entityToStandingsDto(tournament, tree);
   }
 
   @Override
@@ -103,21 +81,72 @@ public class TournamentServiceImpl implements TournamentService {
     return mapper.entityToDetailDto(createdTournament);
   }
 
-
-  public TournamentStandingsTreeDto createTree (List<Match> matches, Tournament tournament) {
-    Horse[] participants = tournament.getParticipants();
-    TournamentDetailParticipantDto Wendy = new TournamentDetailParticipantDto(participants[0].getId(), participants[0].getName(), participants[0].getDateOfBirth(), 1, 3);
-    TournamentDetailParticipantDto Hugo = new TournamentDetailParticipantDto(participants[1].getId(), participants[1].getName(), participants[1].getDateOfBirth(), 2, 3);
-    TournamentDetailParticipantDto Bella = new TournamentDetailParticipantDto(participants[2].getId(), participants[2].getName(), participants[2].getDateOfBirth(), 3, 3);
-    TournamentDetailParticipantDto Thunder = new TournamentDetailParticipantDto(participants[3].getId(), participants[3].getName(), participants[3].getDateOfBirth(), 4, 3);
-    TournamentDetailParticipantDto Luna = new TournamentDetailParticipantDto(participants[4].getId(), participants[4].getName(), participants[0].getDateOfBirth(), 5, 3);
-    TournamentDetailParticipantDto Apollo = new TournamentDetailParticipantDto(participants[5].getId(), participants[5].getName(), participants[5].getDateOfBirth(), 6, 3);
-    TournamentDetailParticipantDto Sophie = new TournamentDetailParticipantDto(participants[6].getId(), participants[6].getName(), participants[6].getDateOfBirth(), 7, 3);
-    TournamentDetailParticipantDto Max = new TournamentDetailParticipantDto(participants[7].getId(), participants[7].getName(), participants[7].getDateOfBirth(), 8, 3);
-    //___________________________________________________________________//
-    //-------------------------------------------------------------------//
-    TournamentStandingsTreeDto tree = new TournamentStandingsTreeDto();
-
-   return tree;
+  @Override
+  public TournamentStandingsDto update(TournamentStandingsDto standings) throws ValidationException, ConflictException, NotFoundException {
+    System.out.println("id: " + standings.id()
+                     + "\nname: " + standings.name()
+                     + "\ntree: " + standings.tree()
+                     + "\nparticipants: " + standings.participants());
+    return getStandings(standings.id());
   }
+
+
+  /**Creating tree section*/
+  TournamentStandingsTreeDto createTournamentTree(TournamentDetailParticipantDto[] arr, int low, int high) {
+    if (low == high) {
+      return arr[low] == null ? null : new TournamentStandingsTreeDto(arr[low]);
+    }
+
+    int mid = (low + high) / 2;
+
+    TournamentStandingsTreeDto branches0 = createTournamentTree(arr, low, mid);
+    TournamentStandingsTreeDto branches1 = createTournamentTree(arr, mid + 1, high);
+
+    // If both children are null, return null
+    if (branches0 == null && branches1 == null) {
+      return null;
+    }
+
+    // If one child is null, return the other child
+    if (branches0 == null) {
+      return branches1;
+    }
+
+    if (branches1 == null) {
+      return branches0;
+    }
+
+
+    // If both children are not null, return a new node with the winner
+    TournamentDetailParticipantDto winner = getWinner(branches0.thisParticipant(), branches1.thisParticipant());  // You need to implement this function
+    TournamentStandingsTreeDto node = new TournamentStandingsTreeDto(winner);
+    node.branches()[0] = branches0;
+    node.branches()[1] = branches1;
+
+    return node;
+  }
+
+  // Function to start creating the tournament tree
+  public TournamentStandingsTreeDto startCreatingTournamentTree(TournamentDetailParticipantDto[] arr) {
+    TournamentStandingsTreeDto root = createTournamentTree(arr, 0, arr.length - 1);
+    return root;
+  }
+
+  TournamentDetailParticipantDto getWinner(TournamentDetailParticipantDto participant1, TournamentDetailParticipantDto participant2) {
+    // If both participants have reached the same round, the winner is not yet decided
+    if (participant1 == null) {
+      return participant2;
+    }
+    // If participant2 is null, return participant1
+    if (participant2 == null) {
+      return participant1;
+    }
+    if (participant1.roundReached() == participant2.roundReached()) {
+      return null;
+    }
+
+    // Otherwise, the participant who has reached a higher round is the winner
+    return participant1.roundReached() > participant2.roundReached() ? participant1 : participant2;
+  }
+
 }

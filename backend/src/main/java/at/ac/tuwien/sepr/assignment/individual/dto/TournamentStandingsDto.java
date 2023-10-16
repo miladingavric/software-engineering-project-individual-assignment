@@ -8,4 +8,11 @@ public record TournamentStandingsDto(
         TournamentDetailParticipantDto[] participants,
         TournamentStandingsTreeDto tree
 ) {
+  public TournamentStandingsDto withId(long newId) {
+    return new TournamentStandingsDto(
+        newId,
+        name,
+        participants,
+        tree);
+  }
 }

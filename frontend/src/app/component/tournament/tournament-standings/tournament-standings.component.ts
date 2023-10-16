@@ -46,7 +46,9 @@ export class TournamentStandingsComponent implements OnInit {
   }
 
   public submit(form: NgForm) {
-    // TODO to be implemented.
+    console.log(this.standings)
+
+    this.service.updateStandings(this.standings);
   }
 
   public generateFirstRound() {
