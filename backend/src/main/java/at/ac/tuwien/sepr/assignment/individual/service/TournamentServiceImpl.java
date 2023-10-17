@@ -23,14 +23,10 @@ import at.ac.tuwien.sepr.assignment.individual.persistence.TournamentDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.awt.*;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -54,6 +50,7 @@ public class TournamentServiceImpl implements TournamentService {
     this.participantMapper = participantMapper;
     this.horseDao = horseDao;
   }
+
   @Override
   public Stream<TournamentListDto> search(TournamentSearchDto searchParameters) {
     var tournaments = dao.search(searchParameters);
@@ -106,18 +103,18 @@ public class TournamentServiceImpl implements TournamentService {
   @Override
   public TournamentStandingsDto update(TournamentStandingsDto standings) throws ValidationException, ConflictException, NotFoundException {
     System.out.println("id: " + standings.id()
-                     + "\nname: " + standings.name()
-                     + "\ntree: " + standings.tree()
-                     + "\nparticipants: " + standings.participants());
+        + "\nname: " + standings.name()
+        + "\ntree: " + standings.tree()
+        + "\nparticipants: " + standings.participants());
     ArrayList extractedParticipants;
     extractedParticipants = extractParticipants(standings.tree());
-    HashMap<Object,Long> newMapper = new HashMap<>();
+    HashMap<Object, Long> newMapper = new HashMap<>();
     for (Object participant : extractedParticipants) {
       Long points = 0L;
       if (newMapper.get(participant) != null) {
         points = newMapper.get(participant);
       }
-      newMapper.put(participant,points+1);
+      newMapper.put(participant, points + 1);
       System.out.println(participant);
     }
     TournamentDetailParticipantDto[] participantsToUpdate = new TournamentDetailParticipantDto[8];
@@ -134,11 +131,13 @@ public class TournamentServiceImpl implements TournamentService {
       i++;
     }
     dao.update(participantsToUpdate, standings.id());
-    return new TournamentStandingsDto(standings.id(),standings.name(),participantsToUpdate, standings.tree());
+    return new TournamentStandingsDto(standings.id(), standings.name(), participantsToUpdate, standings.tree());
   }
 
 
-  /**Creating tree section*/
+  /**
+   * Creating tree section
+   */
   private TournamentStandingsTreeDto createTournamentTree(TournamentDetailParticipantDto[] arr, int low, int high) {
     if (low == high) {
       if (arr[low] == null || arr[low].roundReached() == 0) {
@@ -199,7 +198,9 @@ public class TournamentServiceImpl implements TournamentService {
     return participant1.roundReached() > participant2.roundReached() ? participant1 : participant2;
   }
 
-  /** Extract from list*/
+  /**
+   * Extract from list
+   */
   public static ArrayList<TournamentDetailParticipantDto> extractParticipants(TournamentStandingsTreeDto node) {
     ArrayList<TournamentDetailParticipantDto> participantsList = new ArrayList<>();
 
