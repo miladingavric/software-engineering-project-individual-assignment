@@ -45,10 +45,21 @@ public class TournamentsEndpoint {
   }
 
   @GetMapping("standings/{id}")
-  public ResponseEntity<TournamentStandingsDto> getStandings(@PathVariable long id) {
+  public TournamentStandingsDto getStandings(@PathVariable long id) {
     LOG.info("GET " + BASE_PATH + "/{}", id);
     try {
-      return ResponseEntity.ok(service.getStandings(id));
+      return service.getStandings(id);
+    } catch (NotFoundException e) {
+      HttpStatus status = HttpStatus.NOT_FOUND;
+      logClientError(status, "Tournament to get details of not found", e);
+      throw new ResponseStatusException(status, e.getMessage(), e);
+    }
+  }
+  @GetMapping("standings/firstRound/{id}")
+  public TournamentStandingsDto generateFirstRound(@PathVariable long id) {
+    LOG.info("GET " + BASE_PATH + "/{}", id);
+    try {
+      return service.generateFirstRound(id);
     } catch (NotFoundException e) {
       HttpStatus status = HttpStatus.NOT_FOUND;
       logClientError(status, "Tournament to get details of not found", e);
@@ -68,7 +79,7 @@ public class TournamentsEndpoint {
   }
 
   @PostMapping()
-  public TournamentDetailDto create(@RequestBody TournamentCreateDto toCreate) throws ValidationException, ConflictException {
+  public TournamentDetailDto create(@RequestBody TournamentCreateDto toCreate) throws ValidationException, ConflictException, NotFoundException {
     LOG.info("POST " + BASE_PATH + "/{}", toCreate);
     LOG.debug("Body of request:\n{}", toCreate);
     return service.create(toCreate);

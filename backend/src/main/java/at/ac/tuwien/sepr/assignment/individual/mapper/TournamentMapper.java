@@ -7,17 +7,27 @@ import at.ac.tuwien.sepr.assignment.individual.dto.TournamentStandingsDto;
 import at.ac.tuwien.sepr.assignment.individual.dto.TournamentStandingsTreeDto;
 import at.ac.tuwien.sepr.assignment.individual.entity.Horse;
 import at.ac.tuwien.sepr.assignment.individual.entity.Match;
+import at.ac.tuwien.sepr.assignment.individual.entity.Participant;
 import at.ac.tuwien.sepr.assignment.individual.entity.Tournament;
+import at.ac.tuwien.sepr.assignment.individual.exception.NotFoundException;
+import at.ac.tuwien.sepr.assignment.individual.persistence.HorseDao;
+import at.ac.tuwien.sepr.assignment.individual.persistence.ParticipantDao;
+import at.ac.tuwien.sepr.assignment.individual.persistence.TournamentDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Collection;
 import java.util.Random;
 
 @Component
 public class TournamentMapper {
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private final ParticipantDao participantDao;
+  public TournamentMapper(ParticipantDao participantDao) {
+    this.participantDao = participantDao;
+  }
 
   /**
    * Convert a horse entity object to a {@link TournamentListDto}.
@@ -37,18 +47,19 @@ public class TournamentMapper {
   }
 
 
-  public TournamentDetailDto entityToDetailDto(Tournament tournament) {
+  public TournamentDetailDto entityToDetailDto(Tournament tournament) throws NotFoundException {
     LOG.trace("entityToDetailDto({})", tournament);
-    Horse[] horses = tournament.getParticipants();
+    Participant[] horses = tournament.getParticipants();
+    Collection<Participant> participantsInTournament = participantDao.getParticipantsInTournament(tournament.getId());
     TournamentDetailParticipantDto[] horseDtos = new TournamentDetailParticipantDto[horses.length];
     int increment = 0;
-    for (Horse horse : horses) {
+    for (Participant participant : participantsInTournament) {
       horseDtos[increment] = new TournamentDetailParticipantDto(
-                    horse.getId(),
-                    horse.getName(),
-                    horse.getDateOfBirth(),
-                   -1,
-                    -1
+                    participant.getId(),
+                    participant.getName(),
+                    participant.getDateOfBirth(),
+                    participant.getEntryNumber(),
+                    participant.getRoundReached()
       );
       increment++;
     }
@@ -61,20 +72,24 @@ public class TournamentMapper {
     );
   }
 
-  public TournamentDetailParticipantDto entityToTournamentDetailParticipantDto(Horse horse) {
-    Random random = new Random();
-    long round = random.nextInt(4) + 1;
-    return new TournamentDetailParticipantDto(horse.getId(), horse.getName(), horse.getDateOfBirth(), 1, round);
+  public TournamentDetailParticipantDto entityToTournamentDetailParticipantDto(Participant participant) {
+    return new TournamentDetailParticipantDto(
+        participant.getId(),
+        participant.getName(),
+        participant.getDateOfBirth(),
+        participant.getEntryNumber(),
+        participant.getRoundReached());
   }
 
   public TournamentStandingsDto entityToStandingsDto(Tournament tournament, TournamentStandingsTreeDto tree) {
-    Horse[] horses = tournament.getParticipants();
+    Participant[] horses = tournament.getParticipants();
     TournamentDetailParticipantDto[] participants = new TournamentDetailParticipantDto[horses.length];
     int increment = 0;
-    for (Horse horse : horses) {
+    for (Participant horse : horses) {
       participants[increment] = entityToTournamentDetailParticipantDto(horse);
       increment++;
     }
+
     return new TournamentStandingsDto(
             tournament.getId(),
             tournament.getName(),

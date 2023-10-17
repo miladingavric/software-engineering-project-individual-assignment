@@ -6,7 +6,7 @@ import java.time.LocalDate;
 /**
  * Represents a horse in the persistent data store.
  */
-public class Horse {
+public class Horse implements Comparable<Horse> {
   private Long id;
   private String name;
   private Sex sex;
@@ -89,5 +89,10 @@ public class Horse {
         + ", weight=" + weight
         + ", breed=" + breedId
         + '}';
+  }
+
+  @Override
+  public int compareTo(Horse o) {
+    return o.getName().compareTo(this.getName());
   }
 }

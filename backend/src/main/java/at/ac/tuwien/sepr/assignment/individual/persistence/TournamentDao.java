@@ -2,8 +2,10 @@ package at.ac.tuwien.sepr.assignment.individual.persistence;
 
 
 import at.ac.tuwien.sepr.assignment.individual.dto.TournamentCreateDto;
+import at.ac.tuwien.sepr.assignment.individual.dto.TournamentDetailParticipantDto;
 import at.ac.tuwien.sepr.assignment.individual.dto.TournamentSearchDto;
 import at.ac.tuwien.sepr.assignment.individual.entity.Match;
+import at.ac.tuwien.sepr.assignment.individual.entity.Participant;
 import at.ac.tuwien.sepr.assignment.individual.entity.Tournament;
 import at.ac.tuwien.sepr.assignment.individual.exception.FatalException;
 import at.ac.tuwien.sepr.assignment.individual.exception.NotFoundException;
@@ -42,6 +44,15 @@ public interface TournamentDao {
   Tournament getStandings(long id) throws NotFoundException;
 
   /**
+   * Generate first round for the tournament with given ID.
+   *
+   * @param id the ID of the tournament
+   * @return the tournament
+   * @throws NotFoundException if the Horse with the given ID does not exist in the persistent data store
+   */
+  Participant[] generateFirstRound(long id) throws NotFoundException;
+
+  /**
    * Create the tournament in {@code tournament}
    *  with the data given in {@code tournament}
    *  in the persistent data store.
@@ -51,6 +62,17 @@ public interface TournamentDao {
    * @throws FatalException if it failed to create new id for the new horse
    */
   Tournament create(TournamentCreateDto tournament) throws FatalException;
+
+  /**
+   * Update the tournament in {@code tournament}
+   *  with the data given in {@code tournament}
+   *  in the persistent data store.
+   *
+   * @param participants the horse to create
+   * @return the created horse
+   * @throws FatalException if it failed to create new id for the new horse
+   */
+  Tournament update(TournamentDetailParticipantDto[] participants, Long tournamentID) throws FatalException, NotFoundException;
   /**
    * Get a horse by its ID from the persistent data store.
    *

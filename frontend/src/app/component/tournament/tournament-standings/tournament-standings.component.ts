@@ -32,9 +32,7 @@ export class TournamentStandingsComponent implements OnInit {
     this.service.getStandings(id).subscribe(
       (data: TournamentStandingsDto) => {
         this.standings = data;
-        console.log(data)
-        this.standings.tree.thisParticipant = data.tree.thisParticipant;
-        this.standings.tree.branches = data.tree.branches;
+        console.log(this.standings);
       },
       (error : any) => {
         console.error('Error fetching standings:', error);
@@ -47,7 +45,6 @@ export class TournamentStandingsComponent implements OnInit {
 
   public submit(form: NgForm) {
     console.log(this.standings)
-
     this.service.updateStandings(this.standings).subscribe(
       (response) => {
         // Handle the response here
@@ -68,6 +65,7 @@ export class TournamentStandingsComponent implements OnInit {
       (response) => {
         // Handle the response here
         console.log('GET request successful', response);
+        this.standings = response
       },
       (error) => {
         // Handle errors here

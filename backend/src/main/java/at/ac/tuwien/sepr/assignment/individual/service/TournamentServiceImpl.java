@@ -24,8 +24,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.awt.*;
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -67,7 +72,6 @@ public class TournamentServiceImpl implements TournamentService {
     LOG.trace("details({})", id);
     Collection<Participant> participantsNew = participantDao.getParticipantsInTournament(id);
     Tournament tournament = dao.getStandings(id);
-    Horse[] participants = tournament.getParticipants();
     TournamentDetailParticipantDto[] participantsDtos = new TournamentDetailParticipantDto[8];
     int i = 0;
     for (Participant participant : participantsNew) {
@@ -79,7 +83,21 @@ public class TournamentServiceImpl implements TournamentService {
   }
 
   @Override
-  public TournamentDetailDto create(TournamentCreateDto tournament) throws ValidationException, ConflictException {
+  public TournamentStandingsDto generateFirstRound(long id) throws NotFoundException {
+    TournamentDetailParticipantDto[] participantsDtos = new TournamentDetailParticipantDto[8];
+    Tournament tournament = dao.getStandings(id);
+    Participant[] participants = dao.generateFirstRound(id);
+    int i = 0;
+    for (Participant participant : participants) {
+      participantsDtos[i] = participantMapper.entityToTournamentDetailParticipantDtoPlusRoundReached(participant);
+      i++;
+    }
+    TournamentStandingsTreeDto tree = startCreatingTournamentTree(participantsDtos);
+    return mapper.entityToStandingsDto(tournament, tree);
+  }
+
+  @Override
+  public TournamentDetailDto create(TournamentCreateDto tournament) throws ValidationException, ConflictException, NotFoundException {
     LOG.trace("details({})", tournament);
     Tournament createdTournament = dao.create(tournament);
     return mapper.entityToDetailDto(createdTournament);
@@ -91,15 +109,40 @@ public class TournamentServiceImpl implements TournamentService {
                      + "\nname: " + standings.name()
                      + "\ntree: " + standings.tree()
                      + "\nparticipants: " + standings.participants());
-    return getStandings(standings.id());
+    ArrayList extractedParticipants;
+    extractedParticipants = extractParticipants(standings.tree());
+    HashMap<Object,Long> newMapper = new HashMap<>();
+    for (Object participant : extractedParticipants) {
+      Long points = 0L;
+      if (newMapper.get(participant) != null) {
+        points = newMapper.get(participant);
+      }
+      newMapper.put(participant,points+1);
+      System.out.println(participant);
+    }
+    TournamentDetailParticipantDto[] participantsToUpdate = new TournamentDetailParticipantDto[8];
+    int i = 0;
+    for (Object key : newMapper.keySet()) {
+      TournamentDetailParticipantDto participant = (TournamentDetailParticipantDto) key;
+      participantsToUpdate[i] = new TournamentDetailParticipantDto(
+          participant.horseId(),
+          participant.name(),
+          participant.dateOfBirth(),
+          participant.entryNumber(),
+          newMapper.get(key));
+      System.out.println(participant + ", Value: " + newMapper.get(key));
+      i++;
+    }
+    dao.update(participantsToUpdate, standings.id());
+    return new TournamentStandingsDto(standings.id(),standings.name(),participantsToUpdate, standings.tree());
   }
 
 
   /**Creating tree section*/
-  TournamentStandingsTreeDto createTournamentTree(TournamentDetailParticipantDto[] arr, int low, int high) {
+  private TournamentStandingsTreeDto createTournamentTree(TournamentDetailParticipantDto[] arr, int low, int high) {
     if (low == high) {
       if (arr[low] == null || arr[low].roundReached() == 0) {
-        return new TournamentStandingsTreeDto(null);
+        return new TournamentStandingsTreeDto();
       }
       return new TournamentStandingsTreeDto(arr[low]);
     }
@@ -111,7 +154,7 @@ public class TournamentServiceImpl implements TournamentService {
 
     // If both children are null, return null
     if (branches0 == null && branches1 == null) {
-      return null;
+      return new TournamentStandingsTreeDto(null);
     }
 
     // If one child is null, return the other child
@@ -142,21 +185,39 @@ public class TournamentServiceImpl implements TournamentService {
   TournamentDetailParticipantDto getWinner(TournamentDetailParticipantDto participant1, TournamentDetailParticipantDto participant2) {
     // If both participants have reached the same round, the winner is not yet decided
     if (participant1 == null) {
-      return participant2;
+      return null;
     }
     // If participant2 is null, return participant1
     if (participant2 == null) {
-      return participant1;
+      return null;
     }
     if (participant1.roundReached() == participant2.roundReached()) {
       return null;
     }
-    if (participant1.roundReached() == 0) {
-      System.out.println(participant1.name() + " reached round " + participant1.roundReached());
-    }
 
     // Otherwise, the participant who has reached a higher round is the winner
     return participant1.roundReached() > participant2.roundReached() ? participant1 : participant2;
+  }
+
+  /** Extract from list*/
+  public static ArrayList<TournamentDetailParticipantDto> extractParticipants(TournamentStandingsTreeDto node) {
+    ArrayList<TournamentDetailParticipantDto> participantsList = new ArrayList<>();
+
+    if (node != null) {
+      TournamentDetailParticipantDto thisParticipant = node.thisParticipant();
+
+      if (thisParticipant != null) {
+        participantsList.add(thisParticipant);
+      }
+
+      TournamentStandingsTreeDto[] branches = node.branches();
+      if (branches != null) {
+        for (TournamentStandingsTreeDto branch : branches) {
+          participantsList.addAll(extractParticipants(branch));
+        }
+      }
+    }
+    return participantsList;
   }
 
 }

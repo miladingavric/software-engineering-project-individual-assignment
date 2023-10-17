@@ -10,13 +10,13 @@ public class Tournament {
   private String name;
   private LocalDate startDate;
   private LocalDate endDate;
-  private Horse[] participants;
+  private Participant[] participants;
 
-  public Horse[] getParticipants() {
+  public Participant[] getParticipants() {
     return participants;
   }
 
-  public Tournament setParticipants(Horse[] participants) {
+  public Tournament setParticipants(Participant[] participants) {
     this.participants = participants;
     return this;
   }

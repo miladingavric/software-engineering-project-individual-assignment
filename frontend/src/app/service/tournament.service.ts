@@ -58,7 +58,7 @@ export class TournamentService {
   }
 
   public generateFirstRoung(id : number): Observable<TournamentStandingsDto> {
-    return this.http.get<TournamentStandingsDto>(`${baseUri}/standings/${id}`);
+    return this.http.get<TournamentStandingsDto>(`${baseUri}/standings/firstRound/${id}`);
   }
 
 }

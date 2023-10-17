@@ -16,4 +16,13 @@ public class ParticipantMapper {
         participant.getEntryNumber(),
         participant.getRoundReached());
   }
+  public TournamentDetailParticipantDto entityToTournamentDetailParticipantDtoPlusRoundReached(Participant participant) {
+
+    return new TournamentDetailParticipantDto(
+        participant.getId(),
+        participant.getName(),
+        participant.getDateOfBirth(),
+        participant.getEntryNumber(),
+        1);
+  }
 }

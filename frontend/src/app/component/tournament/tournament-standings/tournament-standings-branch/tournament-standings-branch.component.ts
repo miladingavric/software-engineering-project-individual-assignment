@@ -35,7 +35,7 @@ export class TournamentStandingsBranchComponent {
     // The candidates are either the participants of the previous round matches in this branch
     // or, if this is the first round, all participant horses
     const allCandidates =
-      this.treeBranch?.branches?.map(b => (b?.thisParticipant ?? null))
+      this.treeBranch?.branches?.map(b => b.thisParticipant)
       ?? this.allParticipants;
     const results = allCandidates
       .filter(x => !!x)

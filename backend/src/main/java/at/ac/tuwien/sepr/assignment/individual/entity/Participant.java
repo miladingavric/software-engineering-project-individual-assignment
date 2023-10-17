@@ -2,7 +2,7 @@ package at.ac.tuwien.sepr.assignment.individual.entity;
 
 import java.time.LocalDate;
 
-public class Participant {
+public class Participant implements Comparable<Participant> {
 
   long id;
   String name;
@@ -64,5 +64,10 @@ public class Participant {
         + ", entry number=" + entryNumber
         + ", round reached=" + roundReached
         + '}';
+  }
+
+  @Override
+  public int compareTo(Participant o) {
+    return o.getName().compareTo(this.getName());
   }
 }

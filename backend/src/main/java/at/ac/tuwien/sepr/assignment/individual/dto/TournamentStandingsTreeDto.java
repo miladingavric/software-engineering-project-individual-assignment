@@ -5,4 +5,7 @@ public record TournamentStandingsTreeDto(
   public TournamentStandingsTreeDto(TournamentDetailParticipantDto thisParticipant) {
     this(thisParticipant, new TournamentStandingsTreeDto[2]);
   }
+  public TournamentStandingsTreeDto() {
+    this(null, null);
+  }
 }
